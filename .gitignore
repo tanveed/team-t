@@ -1,0 +1,21 @@
+
+.ipynb_checkpoints/NLP Yelp-checkpoint.ipynb
+NLP/lib/python3.6/site-packages/pip/__init__.py
+NLP/pyvenv.cfg
+NLP/lib/python3.6/site-packages/wheel/__init__.py
+NLP/lib/python3.6/site-packages/easy_install.py
+NLP/lib/python3.6/site-packages/_virtualenv.py
+NLP/lib/python3.6/site-packages/_virtualenv.pth
+NLP/bin/python3.6
+NLP/bin/python3
+NLP/bin/python
+NLP/bin/activate_this.py
+NLP/bin/activate.xsh
+NLP/bin/activate.ps1
+NLP/bin/activate.fish
+NLP/bin/activate.csh
+NLP/bin/activate
+.gitignore.txt
+yelp_review_training_dataset.jsonl
+sample_eval.jsonl
+output.jsonl
