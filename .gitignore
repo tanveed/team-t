@@ -20,3 +20,8 @@ yelp_review_training_dataset.jsonl
 sample_eval.jsonl
 output.jsonl
 *.csv
+.ipynb_checkpoints/ratatata-checkpoint.ipynb
+models/word2vec_500_PAD.model
+models/word2vec_500_PAD.model.trainables.syn1neg.npy
+models/word2vec_500_PAD.model.wv.vectors.npy
+stemmed
