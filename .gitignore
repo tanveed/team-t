@@ -19,3 +19,4 @@ NLP/bin/activate
 yelp_review_training_dataset.jsonl
 sample_eval.jsonl
 output.jsonl
+*.csv
