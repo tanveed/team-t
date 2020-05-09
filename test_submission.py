@@ -75,7 +75,6 @@ def eval(df, models):
 	five_star_ps = lstm_5.predict(X_lstm)
 
 	data = [one_star_ps.flatten(), two_star_ps.flatten(), three_star_ps.flatten(), four_star_ps.flatten(), five_star_ps.flatten()]
-	cols = [1, 2, 3, 4, 5]
 	ova_preds = pd.DataFrame(data=data, index=cols).T
 
 	ova_preds["ova_pred"] = ova_preds.idxmax(axis=1)
@@ -117,7 +116,6 @@ def load_models():
 	lstm.compile(loss='categorical_crossentropy',
 				optimizer=optimizer,
 				metrics=['accuracy'])
-
 
 	# One vs. all
 	lstm_1 = load_model('./models/one_star.h5')
