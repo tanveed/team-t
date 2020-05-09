@@ -23,4 +23,6 @@ cleaned_yelp.csv
 cleaned_yelp_stemmed.csv
 yelp_challenge_5_with_answers.jsonl
 yelp_challenge_6_with_answers.jsonl
+yelp_challenge_3_with_answers.jsonl
+yelp_challenge_8_with_answers.jsonl
 output_reviews_top.csv
