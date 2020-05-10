@@ -165,7 +165,7 @@ if len(sys.argv) > 1:
 	val_df['predicted_stars'] = preds
 
 	# Write predictions
-	val_df[['review_id', 'predicted_stars']].to_json('output.jsonl')
+	val_df[['review_id', 'predicted_stars']].to_json('output.jsonl', orient='records', lines=True)
 	print("Output prediction file written")
 
 	# with open("output.jsonl", "w") as fw:
