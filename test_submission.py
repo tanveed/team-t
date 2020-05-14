@@ -51,12 +51,12 @@ def eval(df, models):
 		tokenizer = pickle.load(handle)
 
 	# Load models
-	baseline, lstm, lstm_1, lstm_2, lstm_3, lstm_4, lstm_5 = models
+	baseline, lstm, bidir, lstm_1, lstm_2, lstm_3, lstm_4, lstm_5 = models
 
 	# Vectorize/Tokenizer text
 	X_baseline = tokenizer.texts_to_matrix(X)
 	X_lstm = tokenizer.texts_to_sequences(X)
-	X_lstm = pad_sequences(X_lstm, maxlen=400)
+	X_lstm = pad_sequences(X_lstm, maxlen=500)
 	
 	# EVALUATE
 	cols = [1, 2, 3, 4, 5]
@@ -69,6 +69,10 @@ def eval(df, models):
 	lstm_preds = pd.DataFrame(lstm.predict(X_lstm), columns=cols)
 	lstm_preds['lstm_pred'] = lstm_preds.idxmax(axis=1)
 
+	# Bidirectional LSTM
+	bidir_preds = pd.DataFrame(bidir.predict(X_lstm), columns=cols)
+	bidir_preds['bidir_pred'] = bidir_preds.idxmax(axis=1)
+	
 	# One vs. All
 	one_star_ps = lstm_1.predict(X_lstm)
 	two_star_ps = lstm_2.predict(X_lstm)
@@ -81,7 +85,7 @@ def eval(df, models):
 
 	ova_preds["ova_pred"] = ova_preds.idxmax(axis=1)
 
-	all_preds = pd.DataFrame([baseline_preds['baseline_pred'], lstm_preds['lstm_pred'], ova_preds['ova_pred']]).T
+	all_preds = pd.DataFrame([baseline_preds['baseline_pred'], lstm_preds['lstm_pred'], bidir_preds['bidir_pred'], ova_preds['ova_pred']]).T
 	all_preds["final_pred"] = all_preds.mode(axis=1)[0]
 	return all_preds["final_pred"]
 
@@ -93,7 +97,7 @@ def my_custom_loss_ova(y_true, y_pred):
 def my_custom_loss(y_true, y_pred):
     mae = mean_absolute_error(y_true, y_pred)
     crossentropy = categorical_crossentropy(y_true, y_pred)
-    return mae + crossentropy)
+    return mae + crossentropy
 
 def clean_text(text):
     new_text = BeautifulSoup(text, "lxml").text # HTML decoding
@@ -104,7 +108,6 @@ def clean_text(text):
     ps = PorterStemmer()
     
     new_text = ' '.join(ps.stem(word) for word in new_text.split()) # keeping all words, no stop word removal
-#     new_text = ' '.join(ps.stem(word) for word in new_text.split() if word not in STOPWORDS) # delete stopwords from text and stem
     return new_text
 
 def load_models():
@@ -126,6 +129,13 @@ def load_models():
 				optimizer=optimizer,
 				metrics=['accuracy'])
 
+	# Bidirectional LSTM
+	bidir = load_model('./models/bidirectional_lstm.h5')
+
+	bidir.compile(loss=my_custom_loss,
+				optimizer=optimizer,
+				metrics=['accuracy', 'mean_absolute_error'])
+	
 	# One vs. all
 	lstm_1 = load_model('./models/one_star.h5')
 
@@ -157,7 +167,7 @@ def load_models():
 					optimizer=optimizer,
 					metrics=['accuracy'])
 
-	return (baseline, lstm, lstm_1, lstm_2, lstm_3, lstm_4, lstm_5)
+	return (baseline, lstm, bidir, lstm_1, lstm_2, lstm_3, lstm_4, lstm_5)
 
 if len(sys.argv) > 1:
 	validation_file = sys.argv[1]
@@ -176,12 +186,5 @@ if len(sys.argv) > 1:
 	# Write predictions
 	val_df[['review_id', 'predicted_stars']].to_json('output.jsonl', orient='records', lines=True)
 	print("Output prediction file written")
-
-	# with open("output.jsonl", "w") as fw:
-	# 	with open(validation_file, "r") as fr:
-	# 		for line in fr:
-	# 			review = json.loads(line)
-	# 			fw.write(json.dumps({"review_id": review['review_id'], "predicted_stars": eval(review['text'], models)})+"\n")
-	# print("Output prediction file written")
 else:
 	print("No validation file given")
