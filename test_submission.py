@@ -32,6 +32,8 @@ from keras.preprocessing import sequence
 from keras import utils
 from keras import regularizers
 from keras.models import load_model
+from keras.losses import mean_absolute_error, binary_crossentropy, categorical_crossentropy
+
 
 # Define some regex patterns for cleaning
 nltk.download('stopwords')
@@ -83,8 +85,15 @@ def eval(df, models):
 	all_preds["final_pred"] = all_preds.mode(axis=1)[0]
 	return all_preds["final_pred"]
 
-def adjust_stopwords(stopwords):
-    words_to_keep = set('nor', 'not', 'very', 'no')
+def my_custom_loss_ova(y_true, y_pred):
+    mae = mean_absolute_error(y_true, y_pred)
+    crossentropy = binary_crossentropy(y_true, y_pred)
+    return mae + crossentropy
+
+def my_custom_loss(y_true, y_pred):
+    mae = mean_absolute_error(y_true, y_pred)
+    crossentropy = categorical_crossentropy(y_true, y_pred)
+    return mae + crossentropy)
 
 def clean_text(text):
     new_text = BeautifulSoup(text, "lxml").text # HTML decoding
@@ -106,45 +115,45 @@ def load_models():
 	# Baseline
 	baseline = load_model('./models/baseline.h5')
 
-	baseline.compile(loss='categorical_crossentropy',
+	baseline.compile(loss=my_custom_loss,
 				optimizer=optimizer,
 				metrics=['accuracy'])
 
 	# LSTM
 	lstm = load_model('./models/lstm.h5')
 
-	lstm.compile(loss='categorical_crossentropy',
+	lstm.compile(loss=my_custom_loss,
 				optimizer=optimizer,
 				metrics=['accuracy'])
 
 	# One vs. all
 	lstm_1 = load_model('./models/one_star.h5')
 
-	lstm_1.compile(loss='binary_crossentropy',
+	lstm_1.compile(loss=my_custom_loss_ova,
 					optimizer=optimizer,
 					metrics=['accuracy'])
 
 	lstm_2 = load_model('./models/two_star.h5')
 
-	lstm_2.compile(loss='binary_crossentropy',
+	lstm_2.compile(loss=my_custom_loss_ova,
 					optimizer=optimizer,
 					metrics=['accuracy'])
 
 	lstm_3 = load_model('./models/three_star.h5')
 
-	lstm_3.compile(loss='binary_crossentropy',
+	lstm_3.compile(loss=my_custom_loss_ova,
 					optimizer=optimizer,
 					metrics=['accuracy'])
 
 	lstm_4 = load_model('./models/four_star.h5')
 
-	lstm_4.compile(loss='binary_crossentropy',
+	lstm_4.compile(loss=my_custom_loss_ova,
 					optimizer=optimizer,
 					metrics=['accuracy'])
 
 	lstm_5 = load_model('./models/five_star.h5')
 
-	lstm_5.compile(loss='binary_crossentropy',
+	lstm_5.compile(loss=my_custom_loss_ova,
 					optimizer=optimizer,
 					metrics=['accuracy'])
 
